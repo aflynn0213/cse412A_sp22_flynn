@@ -28,15 +28,19 @@ def buyLotsOfFruit(orderList):
     """ 
     totalCost = 0.0             
     validFruit = fruitPrices.keys() 
+    print(validFruit)	
 
     for k in orderList:
 	currFruit = k[0]
-        check = checkList(validFruit,currFruit)
+	check = checkList(validFruit,currFruit)
      	if (check == False):
 	    print "ERROR INVALID FRUIT ENTRY"
 	    return "None"
-	
-	totalCost += fruitPrices[currFruit]*k[1]	
+	for j in fruitPrices:
+	    if j[0] == k[0]:
+		print "HERE"
+		totalCost += j[1]*k[1]
+		
     
     return totalCost
 

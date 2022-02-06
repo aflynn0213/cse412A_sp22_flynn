@@ -17,14 +17,17 @@ For orders:  [('apples', 3.0)] best shop is shop2
 
 import shop
 
-def shopSmart(orderList, fruitShops):
-    """
-        orderList: List of (fruit, numPound) tuples
-        fruitShops: List of FruitShops
-    """    
-    "*** YOUR CODE HERE ***"
-    return None
+def shopSmart(orderList, fruitShops):    
+    cost1 = fruitShops[0].getPriceOfOrder(orderList)
+    cost2 = fruitShops[1].getPriceOfOrder(orderList)
+    if cost1<cost2:
+	return fruitShops[0]
+    elif cost1>cost2:
+	return fruitShops[1]
+    else:
+    	return None
     
+
 if __name__ == '__main__':
   "This code runs when you invoke the script from the command line"
   orders = [('apples',1.0), ('oranges',3.0)]
