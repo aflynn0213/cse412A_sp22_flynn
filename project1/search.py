@@ -121,7 +121,6 @@ def breadthFirstSearch(problem):
     bfs_tree = util.Queue()
     _visited = []
     bfs_tree.push(tuple((root,[])))
-    node = root
     while not bfs_tree.isEmpty():
         curr_node, directions = bfs_tree.pop()
         children = problem.getSuccessors(curr_node)
@@ -138,6 +137,21 @@ def breadthFirstSearch(problem):
 def uniformCostSearch(problem):
     "Search the node of least total cost first. "
     "*** YOUR CODE HERE ***"
+    root = problem.getStartState()
+    heap = util.PriorityQueue()
+    heap.push((root,[]),0)
+    _visited = []
+    while not heap.isEmpty():
+        curr_node, directions = heap.pop()
+        children = problem.getSuccessors(curr_node)
+        _visited.append(curr_node)
+        for child in children:
+            if (not child[0] in _visited):
+                curr_dir = directions + [child[1]]
+                if problem.isGoalState(child[0]):
+                    return curr_dir
+                else:
+                    heap.push((child[0],curr_dir),problem.getCostOfActions(curr_dir))
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -145,11 +159,13 @@ def nullHeuristic(state, problem=None):
     A heuristic function estimates the cost from the current state to the nearest
     goal in the provided SearchProblem.  This heuristic is trivial.
     """
+
     return 0
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     "Search the node that has the lowest combined cost and heuristic first."
     "*** YOUR CODE HERE ***"
+
     util.raiseNotDefined()
 
 
