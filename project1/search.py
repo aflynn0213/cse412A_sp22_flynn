@@ -80,10 +80,10 @@ def depthFirstSearch(problem):
     understand the search problem that is being passed in:
     """
 
-    #print "Start:", problem.getStartState()
-    #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    #print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    #import time
+    print "Start:", problem.getStartState()
+    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+    print "Start's successors:", problem.getSuccessors(problem.getStartState())
+
     root = problem.getStartState()
     node = root
     print "Is the start a goal?"
@@ -98,18 +98,15 @@ def depthFirstSearch(problem):
     dfs_tree.push(node_root)
     while (not dfs_tree.isEmpty() and not problem.isGoalState(node)):
         curr_node, directions = dfs_tree.pop()
-        print curr_node
-        print directions
         children = problem.getSuccessors(curr_node)
         _visited.append(curr_node)
         for child in children:
-            #time.sleep(0.5)
             if (not child[0] in _visited):
                 node = child[0]
-                print directions+[child[1]]
-                dfs_tree.push((node,directions + [child[1]]))
+                curr_dir = directions+[child[1]]
+                dfs_tree.push((node,curr_dir))
 
-    return directions + [child[1]]
+    return curr_dir
     util.raiseNotDefined()
 
 
@@ -131,7 +128,6 @@ def breadthFirstSearch(problem):
         _visited.append(curr_node)
         for child in children:
             if (not child[0] in _visited):
-                direction = child[1]
                 if problem.isGoalState(child[0]):
                     return directions + [child[1]]
                 else:
