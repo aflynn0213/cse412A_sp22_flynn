@@ -78,20 +78,65 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
+
+    #print "Start:", problem.getStartState()
+    #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+    #print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    #import time
+    root = problem.getStartState()
+    node = root
+    print "Is the start a goal?"
+    if problem.isGoalState((2,1)):
+        return True
+    else:
+        print "False"
+
+    dfs_tree = util.Stack()
+    _visited = []
+    node_root = (root,[])
+    dfs_tree.push(node_root)
+    while (not dfs_tree.isEmpty() and not problem.isGoalState(node)):
+        curr_node, directions = dfs_tree.pop()
+        print curr_node
+        print directions
+        children = problem.getSuccessors(curr_node)
+        _visited.append(curr_node)
+        for child in children:
+            #time.sleep(0.5)
+            if (not child[0] in _visited):
+                node = child[0]
+                print directions+[child[1]]
+                dfs_tree.push((node,directions + [child[1]]))
+
+    return directions + [child[1]]
     util.raiseNotDefined()
+
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     [2nd Edition: p 73, 3rd Edition: p 82]
     """
-    "*** YOUR CODE HERE ***"
+    import time
+
+    root = problem.getStartState()
+    bfs_tree = util.Queue()
+    _visited = []
+    bfs_tree.push(tuple((root,[])))
+    node = root
+    while not bfs_tree.isEmpty():
+        curr_node, directions = bfs_tree.pop()
+        children = problem.getSuccessors(curr_node)
+        _visited.append(curr_node)
+        for child in children:
+            if (not child[0] in _visited):
+                direction = child[1]
+                if problem.isGoalState(child[0]):
+                    return directions + [child[1]]
+                else:
+                    bfs_tree.push((child[0],directions+[child[1]]))
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
