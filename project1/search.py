@@ -143,15 +143,14 @@ def uniformCostSearch(problem):
     _visited = []
     while not heap.isEmpty():
         curr_node, directions = heap.pop()
+        if problem.isGoalState(curr_node):
+            return directions
         children = problem.getSuccessors(curr_node)
         _visited.append(curr_node)
         for child in children:
             if (not child[0] in _visited):
                 curr_dir = directions + [child[1]]
-                if problem.isGoalState(child[0]):
-                    return curr_dir
-                else:
-                    heap.push((child[0],curr_dir),problem.getCostOfActions(curr_dir))
+                heap.push((child[0],curr_dir),problem.getCostOfActions(curr_dir))
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
