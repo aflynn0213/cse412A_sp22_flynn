@@ -123,15 +123,15 @@ def breadthFirstSearch(problem):
     bfs_tree.push(tuple((root,[])))
     while not bfs_tree.isEmpty():
         curr_node, directions = bfs_tree.pop()
+        if curr_node in _visited:
+            continue
+        if problem.isGoalState(curr_node):
+            return directions
         children = problem.getSuccessors(curr_node)
         _visited.append(curr_node)
         for child in children:
             if (not child[0] in _visited):
-                if problem.isGoalState(child[0]):
-                    return directions + [child[1]]
-                else:
-                    bfs_tree.push((child[0],directions+[child[1]]))
-
+                bfs_tree.push((child[0],directions+[child[1]]))
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
