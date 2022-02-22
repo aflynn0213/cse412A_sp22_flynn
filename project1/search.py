@@ -120,10 +120,11 @@ def breadthFirstSearch(problem):
     root = problem.getStartState()
     bfs_tree = util.Queue()
     _visited = []
-    bfs_tree.push(tuple((root,[])))
+    bfs_tree.push((root,[]))
 
     while not bfs_tree.isEmpty():
         curr_node, directions = bfs_tree.pop()
+        
         if curr_node in _visited:
             continue
         if problem.isGoalState(curr_node):
