@@ -87,7 +87,7 @@ def depthFirstSearch(problem):
     root = problem.getStartState()
     node = root
     print "Is the start a goal?"
-    if problem.isGoalState((2,1)):
+    if problem.isGoalState(root):
         return True
     else:
         print "False"
@@ -121,6 +121,7 @@ def breadthFirstSearch(problem):
     bfs_tree = util.Queue()
     _visited = []
     bfs_tree.push(tuple((root,[])))
+
     while not bfs_tree.isEmpty():
         curr_node, directions = bfs_tree.pop()
         if curr_node in _visited:
