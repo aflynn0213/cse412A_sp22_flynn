@@ -276,8 +276,7 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # Number of search nodes expanded
 
         self.visited_corner = []
-        self.ancestor = []
-        self.root_state = (self.startingPosition,self.corners,self.ancestor)
+        self.root_state = (self.startingPosition,self.corners)
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
@@ -345,7 +344,6 @@ class CornersProblem(search.SearchProblem):
         for i in self.corners:
             if state[0] == i:
                 self.visited_corner.append(state[0])
-                print self.visited_corner
                 break
 
         self._expanded += 1
