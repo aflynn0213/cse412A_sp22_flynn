@@ -275,46 +275,20 @@ class CornersProblem(search.SearchProblem):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0 # Number of search nodes expanded
 
-        self.visited_corner = []
         self.root_state = (self.startingPosition,self.corners)
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
-        "*** YOUR CODE HERE ***"
         return self.root_state
         util.raiseNotDefined()
 
     def isGoalState(self, state):
-        "Returns whether this search state is a goal state of the problem"
-        "*** YOUR CODE HERE ***"
-        corner_found = False
-        index = 0
-
-        for i in state[1]:
-            if i == state[0]:
-                corner_found = True
-                saved_index = index
-                break
-            index += 1
-        if corner_found:
-            index = 0
-            for j in state[1]:
-                if (index == saved_index):
-                    if index == len(state[1])-1:
-                        print "Won"
-                        print self.visited_corner
-                        return True
-                    else:
-                        index +=1
-                        continue
-                elif (j in self.visited_corner):
-                    index += 1
-                    continue
-                elif (j not in self.visited_corner):
-                    break
-
+        """
+        Returns whether this search state is a goal state of the problem.
+        """
+        if not state[1]:
+            return True
         return False
-
         util.raiseNotDefined()
 
     def getSuccessors(self, state):
@@ -330,23 +304,20 @@ class CornersProblem(search.SearchProblem):
         """
 
         successors = []
+
         for action in [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]:
-            # Add a successor state to the successor list if the action is legal
-            # Here's a code snippet for figuring out whether a new position hits a wall:
-            x = state[0][0]
-            y = state[0][1]
+            x,y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            if not self.walls[nextx][nexty]:
-                nextState = (nextx,nexty)
-                successors.append(((nextState,self.corners),action,1))
+            hitsWall = self.walls[nextx][nexty]
+            next = (nextx, nexty)
+            unvisited = list(state[1])
+            if not hitsWall:
+                if next in unvisited:
+                    unvisited.remove(next)
+                successors.append(((next, unvisited), action, 1))
 
-        for i in self.corners:
-            if state[0] == i:
-                self.visited_corner.append(state[0])
-                break
-
-        self._expanded += 1
+        self._expanded += 1 # DO NOT CHANGE
         return successors
 
     def getCostOfActions(self, actions):

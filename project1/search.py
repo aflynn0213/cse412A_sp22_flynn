@@ -87,6 +87,7 @@ def depthFirstSearch(problem):
     root = problem.getStartState()
     node = root
     print "Is the start a goal?"
+
     if problem.isGoalState(root):
         return True
     else:
@@ -96,17 +97,21 @@ def depthFirstSearch(problem):
     _visited = []
     node_root = (root,[])
     dfs_tree.push(node_root)
+
     while (not dfs_tree.isEmpty() and not problem.isGoalState(node)):
         curr_node, directions = dfs_tree.pop()
         children = problem.getSuccessors(curr_node)
         _visited.append(curr_node)
+
         for child in children:
+
             if (not child[0] in _visited):
                 node = child[0]
                 curr_dir = directions+[child[1]]
                 dfs_tree.push((node,curr_dir))
 
     return curr_dir
+
     util.raiseNotDefined()
 
 
@@ -115,8 +120,6 @@ def breadthFirstSearch(problem):
     Search the shallowest nodes in the search tree first.
     [2nd Edition: p 73, 3rd Edition: p 82]
     """
-    import time
-
     root = problem.getStartState()
     bfs_tree = util.Queue()
     _visited = []
@@ -124,15 +127,19 @@ def breadthFirstSearch(problem):
 
     while not bfs_tree.isEmpty():
         curr_node, directions = bfs_tree.pop()
-        
+
         if curr_node in _visited:
             continue
+
         if problem.isGoalState(curr_node):
             return directions
+
         children = problem.getSuccessors(curr_node)
         _visited.append(curr_node)
+
         for child in children:
             bfs_tree.push((child[0],directions+[child[1]]))
+
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
@@ -142,16 +149,21 @@ def uniformCostSearch(problem):
     heap = util.PriorityQueue()
     heap.push((root,[]),0)
     _visited = []
+
     while not heap.isEmpty():
         curr_node, directions = heap.pop()
+
         if problem.isGoalState(curr_node):
             return directions
         children = problem.getSuccessors(curr_node)
         _visited.append(curr_node)
+
         for child in children:
+
             if (not child[0] in _visited):
                 curr_dir = directions + [child[1]]
                 heap.push((child[0],curr_dir),problem.getCostOfActions(curr_dir))
+
     util.raiseNotDefined()
 
 def nullHeuristic(state, problem=None):
@@ -169,16 +181,22 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     heap = util.PriorityQueue()
     heap.push((root,[]),0)
     _visited = []
+
     while not heap.isEmpty():
         curr_node, directions = heap.pop()
+
         if problem.isGoalState(curr_node):
             return directions
+
         children = problem.getSuccessors(curr_node)
         _visited.append(curr_node)
+
         for child in children:
+
             if (not child[0] in _visited):
                 curr_dir = directions + [child[1]]
                 heap.push((child[0],curr_dir),problem.getCostOfActions(curr_dir)+heuristic(child[0],problem))
+
     util.raiseNotDefined()
 
 
