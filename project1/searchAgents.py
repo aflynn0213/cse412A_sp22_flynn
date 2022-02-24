@@ -456,8 +456,23 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
+    temp_grid = foodGrid.copy()
+    true_count = temp_grid.count()
+    temp_grid = temp_grid.asList()
 
-    return 0
+    c = 0
+    temp_grid = [list(x) for x in temp_grid]
+    print temp_grid
+    while temp_grid:
+        dist_list = []
+        for i in temp_grid:
+            dist = util.manhattanDistance(position,i)
+            dist_list.append(dist)
+        minimum = min(dist_list)
+        c = c + minimum
+        position = temp_grid[dist_list.index(minimum)]
+        del temp_grid[dist_list.index(minimum)]
+    return c
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
