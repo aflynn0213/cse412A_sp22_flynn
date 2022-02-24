@@ -268,8 +268,8 @@ class CornersProblem(search.SearchProblem):
         """
         self.walls = startingGameState.getWalls()
         self.startingPosition = startingGameState.getPacmanPosition()
-        top, right = self.walls.height-2, self.walls.width-2
-        self.corners = ((1,1), (1,top), (right, 1), (right, top))
+        self.top, self.right = self.walls.height-2, self.walls.width-2
+        self.corners = ((1,1), (1,self.top), (self.right, 1), (self.right, self.top))
         for corner in self.corners:
             if not startingGameState.hasFood(*corner):
                 print 'Warning: no food in corner ' + str(corner)
@@ -309,12 +309,12 @@ class CornersProblem(search.SearchProblem):
             x,y = state[0]
             dx, dy = Actions.directionToVector(action)
             nextx, nexty = int(x + dx), int(y + dy)
-            hitsWall = self.walls[nextx][nexty]
             next = (nextx, nexty)
             unvisited = list(state[1])
-            if not hitsWall:
+            if not self.walls[nextx][nexty]:
                 if next in unvisited:
-                    unvisited.remove(next)
+                    index = unvisited.index(next)
+                    del unvisited[index]
                 successors.append(((next, unvisited), action, 1))
 
         self._expanded += 1 # DO NOT CHANGE
@@ -351,7 +351,22 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    c = 0
+    temp_state = state[0]
+    unvisited = list(state[1])
+
+    while len(unvisited)!=0:
+        manDist = []
+        for corner in unvisited:
+            #Use Manhattan because it calculates absolute value
+            man = util.manhattanDistance(temp_state,corner)
+            manDist.append(man)
+        minimum = min(manDist)
+        c = c + minimum
+        temp_state = unvisited[manDist.index(minimum)]
+        del unvisited[manDist.index(minimum)]
+
+    return c # Default to trivial solution
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
@@ -441,7 +456,7 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
+
     return 0
 
 class ClosestDotSearchAgent(SearchAgent):
