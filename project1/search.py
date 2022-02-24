@@ -185,6 +185,9 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     while not heap.isEmpty():
         curr_node, directions = heap.pop()
 
+        if (curr_node in _visited):
+            continue
+
         if problem.isGoalState(curr_node):
             return directions
 
@@ -192,10 +195,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         _visited.append(curr_node)
 
         for child in children:
-
-            if (not child[0] in _visited):
-                curr_dir = directions + [child[1]]
-                heap.push((child[0],curr_dir),problem.getCostOfActions(curr_dir)+heuristic(child[0],problem))
+            curr_dir = directions + [child[1]]
+            heap.push((child[0],curr_dir),problem.getCostOfActions(curr_dir)+heuristic(child[0],problem))
 
     util.raiseNotDefined()
 
