@@ -462,17 +462,28 @@ def foodHeuristic(state, problem):
 
     c = 0
     temp_grid = [list(x) for x in temp_grid]
-    print temp_grid
-    while temp_grid:
-        dist_list = []
+    #print temp_grid
+    #while temp_grid:
+    dist_list = []
+    if temp_grid:
         for i in temp_grid:
             dist = util.manhattanDistance(position,i)
             dist_list.append(dist)
         minimum = min(dist_list)
-        c = c + minimum
+        c = minimum
         position = temp_grid[dist_list.index(minimum)]
-        del temp_grid[dist_list.index(minimum)]
+        dist_list = []
+        for j in temp_grid:
+            dist = util.manhattanDistance(position,j)
+            dist_list.append(dist)
+        maximum = max(dist_list)
+        c = c + maximum
+
     return c
+
+#def pythagDist(p1,p2):
+#    import math as m
+#    return m.ceil(m.sqrt((p1[0]-p2[0])**2 + (p1[1]-p2[1])**2))
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
