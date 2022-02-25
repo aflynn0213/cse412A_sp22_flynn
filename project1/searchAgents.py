@@ -462,9 +462,8 @@ def foodHeuristic(state, problem):
 
     c = 0
     temp_grid = [list(x) for x in temp_grid]
-    #print temp_grid
-    #while temp_grid:
     dist_list = []
+    
     if temp_grid:
         for i in temp_grid:
             dist = util.manhattanDistance(position,i)
