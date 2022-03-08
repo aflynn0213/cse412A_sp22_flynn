@@ -40,7 +40,6 @@ class ReflexAgent(Agent):
     bestScore = max(scores)
     bestIndices = [index for index in range(len(scores)) if scores[index] == bestScore]
     chosenIndex = random.choice(bestIndices) # Pick randomly among the best
-
     "Add more of your code here if you want to"
 
     return legalMoves[chosenIndex]
@@ -66,10 +65,50 @@ class ReflexAgent(Agent):
     newFood = successorGameState.getFood()
     newGhostStates = successorGameState.getGhostStates()
     newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
-
+    newFood= newFood.asList()
     "*** YOUR CODE HERE ***"
-    return successorGameState.getScore()
 
+    num_ghosts = len(newGhostStates)
+    dist = []
+    food_score = 0
+    sum_ghosts = 0
+    max_food = -100.0
+
+    if successorGameState.isWin():
+        return 1000
+        
+    if newFood:
+        if len(newFood)==1:
+            food_score = float(2)/util.manhattanDistance(newPos,newFood[0])
+        else:
+            for food in newFood:
+                temp = float(2)/util.manhattanDistance(newPos,food)
+                if temp > max_food:
+                    max_food = float(temp)
+            #food dsitance inversely proportional to score
+            food_score = max_food
+
+        ghost_dist = []
+        if num_ghosts == 1:
+            if newPos == successorGameState.getGhostPosition(1):
+                sum_ghosts = -2.5
+            else:
+                sum_ghosts = float(-2)/(util.manhattanDistance(newPos,successorGameState.getGhostPosition(1)))
+
+        else:
+            for i in range(num_ghosts):
+                temp_dist = util.manhattanDistance(newPos,successorGameState.getGhostPosition(i+1))
+                sum_ghosts = sum_ghosts - float(2)/temp_dist
+
+        successor_score = successorGameState.getScore()
+
+        if action == 'Stop':
+            successor_score = successor_score - 10
+
+        return float(successor_score) + sum_ghosts + food_score
+
+    else:
+        return 0
 def scoreEvaluationFunction(currentGameState):
   """
     This default evaluation function just returns the score of the state.
@@ -183,4 +222,3 @@ class ContestAgent(MultiAgentSearchAgent):
     """
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
-
