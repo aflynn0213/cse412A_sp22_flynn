@@ -109,8 +109,6 @@ class ReflexAgent(Agent):
 
     else:
         return 0
-
-        
 def scoreEvaluationFunction(currentGameState):
   """
     This default evaluation function just returns the score of the state.
@@ -282,7 +280,41 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
       legal moves.
     """
     "*** YOUR CODE HERE ***"
+    (mx_val,opt_move) = self.max_value(gameState,1)
+    return opt_move
     util.raiseNotDefined()
+
+  def max_value(self,state,depth):
+        if depth > self.depth or state.isWin() or state.isLose():
+            return self.evaluationFunction(state),""
+        v = -1000
+        opt_move = ""
+        moves = state.getLegalActions(0)
+        if "Stop" in moves:
+            moves.remove("Stop")
+
+        for move in moves:
+            temp_v = self.min_value(state.generateSuccessor(0,move),1,depth)[0]
+            if temp_v > v:
+                v = temp_v
+                opt_move = move
+        return v,opt_move
+
+  def min_value(self,state,index,depth):
+        if state.isWin() or state.isLose():
+            return self.evaluationFunction(state),""
+        moves = state.getLegalActions(index)
+        e_val = 0
+        prob = float(1)/len(moves)
+        if index == state.getNumAgents()-1:
+            for move in moves:
+                temp_v = self.max_value(state.generateSuccessor(index,move),depth+1)[0]
+                e_val += prob*float(temp_v)
+        else:
+            for move in moves:
+                temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth)[0]
+                e_val += prob*float(temp_v)
+        return e_val,""
 
 def betterEvaluationFunction(currentGameState):
   """
