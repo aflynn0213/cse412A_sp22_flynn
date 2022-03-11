@@ -76,7 +76,7 @@ class ReflexAgent(Agent):
 
     if successorGameState.isWin():
         return 1000
-        
+
     if newFood:
         if len(newFood)==1:
             food_score = float(2)/util.manhattanDistance(newPos,newFood[0])
@@ -165,7 +165,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
         Returns the total number of agents in the game
     """
     "*** YOUR CODE HERE ***"
+
+    (mx_val,opt_move) = self.max_value(gameState,1)
+    return opt_move
     util.raiseNotDefined()
+
+  def max_value(self,state,depth):
+        if depth > self.depth or state.isWin() or state.isLose():
+            print self.evaluationFunction(state)
+            return self.evaluationFunction(state),""
+        v = -1000
+        opt_move = ""
+        moves = state.getLegalActions(0)
+        if "Stop" in moves:
+            moves.remove("Stop")
+
+        for move in moves:
+            temp_v = self.min_value(state.generateSuccessor(0,move),1,depth)[0]
+            if temp_v > v:
+                v = temp_v
+                opt_move = move
+        return v,opt_move
+
+  def min_value(self,state,index,depth):
+        if depth > self.depth:
+            return self.evaluationFunction(state),""
+
+        v = 1000
+        opt_move = ""
+        moves = state.getLegalActions(index)
+
+        if index == state.getNumAgents()-1:
+            for move in moves:
+                temp_v = self.max_value(state.generateSuccessor(index,move),depth+1)[0]
+                if temp_v < v:
+                    v = temp_v
+                    opt_move = move
+        else:
+            for move in moves:
+                temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth)[0]
+                if temp_v > v:
+                    v = temp_v
+                    opt_move = move
+        return v,opt_move
 
 class AlphaBetaAgent(MultiAgentSearchAgent):
   """
