@@ -263,8 +263,6 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                   v = temp_v
                   opt_move = move
                   beta = min(beta,v)
-              if alpha >= beta:
-                  return v,opt_move
       return v,opt_move
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
