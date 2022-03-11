@@ -172,7 +172,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
   def max_value(self,state,depth):
         if depth > self.depth or state.isWin() or state.isLose():
-            print self.evaluationFunction(state)
             return self.evaluationFunction(state),""
         v = -1000
         opt_move = ""
@@ -188,13 +187,12 @@ class MinimaxAgent(MultiAgentSearchAgent):
         return v,opt_move
 
   def min_value(self,state,index,depth):
-        if depth > self.depth:
+        if state.isWin() or state.isLose():
             return self.evaluationFunction(state),""
-
         v = 1000
         opt_move = ""
         moves = state.getLegalActions(index)
-
+        
         if index == state.getNumAgents()-1:
             for move in moves:
                 temp_v = self.max_value(state.generateSuccessor(index,move),depth+1)[0]
