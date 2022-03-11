@@ -221,51 +221,51 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
     return opt_move
     util.raiseNotDefined()
 
-    def max_value(self,state,depth,alpha,beta):
-        if depth > self.depth or state.isWin() or state.isLose():
-            return self.evaluationFunction(state),""
-        v = -1000
-        opt_move = ""
-        moves = state.getLegalActions(0)
-        if "Stop" in moves:
-            moves.remove("Stop")
+  def max_value(self,state,depth,alpha,beta):
+      if depth > self.depth or state.isWin() or state.isLose():
+          return self.evaluationFunction(state),""
+      v = -1000
+      opt_move = ""
+      moves = state.getLegalActions(0)
+      if "Stop" in moves:
+          moves.remove("Stop")
 
-        for move in moves:
-            temp_v = self.min_value(state.generateSuccessor(0,move),1,depth)[0]
-            if temp_v > v:
-                v = temp_v
-                opt_move = move
-                alpha = max(v,alpha)
-            if alpha >= beta:
-                return v,opt_move
-        return v,opt_move
+      for move in moves:
+          temp_v = self.min_value(state.generateSuccessor(0,move),1,depth,alpha,beta)[0]
+          if temp_v > v:
+              v = temp_v
+              opt_move = move
+              alpha = max(v,alpha)
+              if alpha >= beta:
+                  return v,opt_move
+      return v,opt_move
 
-    def min_value(self,state,index,depth,alpha,beta):
-        if state.isWin() or state.isLose():
-            return self.evaluationFunction(state),""
-        v = 1000
-        opt_move = ""
-        moves = state.getLegalActions(index)
+  def min_value(self,state,index,depth,alpha,beta):
+      if state.isWin() or state.isLose():
+          return self.evaluationFunction(state),""
+      v = 1000
+      opt_move = ""
+      moves = state.getLegalActions(index)
 
-        if index == state.getNumAgents()-1:
-            for move in moves:
-                temp_v = self.max_value(state.generateSuccessor(index,move),depth+1,alpha,beta)[0]
-                if temp_v < v:
-                    v = temp_v
-                    opt_move = move
-                    beta = min(beta,v)
-                if alpha >= beta:
-                    return v,opt_move
-        else:
-            for move in moves:
-                temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth,alpha,beta)[0]
-                if temp_v > v:
-                    v = temp_v
-                    opt_move = move
-                    beta = min(beta,v)
-                if alpha >= beta:
-                    return v,opt_move
-        return v,opt_move
+      if index == state.getNumAgents()-1:
+          for move in moves:
+              temp_v = self.max_value(state.generateSuccessor(index,move),depth+1,alpha,beta)[0]
+              if temp_v < v:
+                  v = temp_v
+                  opt_move = move
+                  beta = min(beta,v)
+              if alpha >= beta:
+                  return v,opt_move
+      else:
+          for move in moves:
+              temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth,alpha,beta)[0]
+              if temp_v > v:
+                  v = temp_v
+                  opt_move = move
+                  beta = min(beta,v)
+              if alpha >= beta:
+                  return v,opt_move
+      return v,opt_move
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
   """
