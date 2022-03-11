@@ -109,6 +109,8 @@ class ReflexAgent(Agent):
 
     else:
         return 0
+
+        
 def scoreEvaluationFunction(currentGameState):
   """
     This default evaluation function just returns the score of the state.
@@ -202,7 +204,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         else:
             for move in moves:
                 temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth)[0]
-                if temp_v > v:
+                if temp_v < v:
                     v = temp_v
                     opt_move = move
         return v,opt_move
@@ -259,10 +261,12 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
       else:
           for move in moves:
               temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth,alpha,beta)[0]
-              if temp_v > v:
+              if temp_v < v:
                   v = temp_v
                   opt_move = move
                   beta = min(beta,v)
+              if alpha >= beta:
+                  return v,opt_move
       return v,opt_move
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
