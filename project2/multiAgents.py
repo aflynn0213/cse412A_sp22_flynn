@@ -324,6 +324,55 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
   """
   "*** YOUR CODE HERE ***"
+  currPos = currentGameState.getPacmanPosition()
+  Food = currentGameState.getFood()
+  newGhostStates = currentGameState.getGhostStates()
+  newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+  Food = Food.asList()
+  num_ghosts = len(newGhostStates)
+  dist = []
+  food_score = 0
+  sum_ghosts = 0
+  max_food = -100.0
+
+  if currentGameState.isWin():
+      return 1000
+
+  if Food:
+      if len(Food)==1:
+          food_score = float(2)/util.manhattanDistance(currPos,Food[0])
+      else:
+          for food in Food:
+              temp = float(2)/util.manhattanDistance(currPos,food)
+              if temp > max_food:
+                  max_food = float(temp)
+          #food dsitance inversely proportional to score
+          food_score = max_food
+
+      ghost_dist = []
+      if num_ghosts == 1:
+          if newPos == currGameState.getGhostPosition(1):
+              sum_ghosts = -2.5
+          else:
+              sum_ghosts = float(-2)/(util.manhattanDistance(currPos,currentGameState.getGhostPosition(1)))
+
+      else:
+          for i in range(num_ghosts):
+              temp_dist = util.manhattanDistance(currPos,currentGameState.getGhostPosition(i+1))
+              sum_ghosts = sum_ghosts - float(2)/(temp_dist+.01)
+
+      scared_times_avg = float(sum(newScaredTimes))/num_ghosts
+
+      _score = currentGameState.getScore()
+      if scared_times_avg != 0:
+          _score += scared_times_avg
+
+
+      return float(_score) + sum_ghosts + food_score
+
+  else:
+      return 0
   util.raiseNotDefined()
 
 # Abbreviation
