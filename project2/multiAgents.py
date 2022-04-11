@@ -172,7 +172,6 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
   def max_value(self,state,depth):
         if depth > self.depth or state.isWin() or state.isLose():
-            print self.evaluationFunction(state)
             return self.evaluationFunction(state),""
         v = -1000
         opt_move = ""
@@ -188,9 +187,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
         return v,opt_move
 
   def min_value(self,state,index,depth):
-        if depth > self.depth:
+        if state.isWin() or state.isLose():
             return self.evaluationFunction(state),""
-
         v = 1000
         opt_move = ""
         moves = state.getLegalActions(index)
@@ -204,7 +202,7 @@ class MinimaxAgent(MultiAgentSearchAgent):
         else:
             for move in moves:
                 temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth)[0]
-                if temp_v > v:
+                if temp_v < v:
                     v = temp_v
                     opt_move = move
         return v,opt_move
@@ -219,7 +217,55 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
       Returns the minimax action using self.depth and self.evaluationFunction
     """
     "*** YOUR CODE HERE ***"
+    (mx_val,opt_move) = self.max_value(gameState,1,float("-inf"),float("inf"))
+    return opt_move
     util.raiseNotDefined()
+
+  def max_value(self,state,depth,alpha,beta):
+      if depth > self.depth or state.isWin() or state.isLose():
+          return self.evaluationFunction(state),""
+      v = -1000
+      opt_move = ""
+      moves = state.getLegalActions(0)
+      if "Stop" in moves:
+          moves.remove("Stop")
+
+      for move in moves:
+          temp_v = self.min_value(state.generateSuccessor(0,move),1,depth,alpha,beta)[0]
+          if temp_v > v:
+              v = temp_v
+              opt_move = move
+              alpha = max(v,alpha)
+              if alpha >= beta:
+                  return v,opt_move
+      return v,opt_move
+
+  def min_value(self,state,index,depth,alpha,beta):
+      if state.isWin() or state.isLose():
+          return self.evaluationFunction(state),""
+      v = 1000
+      opt_move = ""
+      moves = state.getLegalActions(index)
+
+      if index == state.getNumAgents()-1:
+          for move in moves:
+              temp_v = self.max_value(state.generateSuccessor(index,move),depth+1,alpha,beta)[0]
+              if temp_v < v:
+                  v = temp_v
+                  opt_move = move
+                  beta = min(beta,v)
+              if alpha >= beta:
+                  return v,opt_move
+      else:
+          for move in moves:
+              temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth,alpha,beta)[0]
+              if temp_v < v:
+                  v = temp_v
+                  opt_move = move
+                  beta = min(beta,v)
+              if alpha >= beta:
+                  return v,opt_move
+      return v,opt_move
 
 class ExpectimaxAgent(MultiAgentSearchAgent):
   """
@@ -234,7 +280,41 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
       legal moves.
     """
     "*** YOUR CODE HERE ***"
+    (mx_val,opt_move) = self.max_value(gameState,1)
+    return opt_move
     util.raiseNotDefined()
+
+  def max_value(self,state,depth):
+        if depth > self.depth or state.isWin() or state.isLose():
+            return self.evaluationFunction(state),""
+        v = -1000
+        opt_move = ""
+        moves = state.getLegalActions(0)
+        if "Stop" in moves:
+            moves.remove("Stop")
+
+        for move in moves:
+            temp_v = self.min_value(state.generateSuccessor(0,move),1,depth)[0]
+            if temp_v > v:
+                v = temp_v
+                opt_move = move
+        return v,opt_move
+
+  def min_value(self,state,index,depth):
+        if state.isWin() or state.isLose():
+            return self.evaluationFunction(state),""
+        moves = state.getLegalActions(index)
+        e_val = 0
+        prob = float(1)/len(moves)
+        if index == state.getNumAgents()-1:
+            for move in moves:
+                temp_v = self.max_value(state.generateSuccessor(index,move),depth+1)[0]
+                e_val += prob*float(temp_v)
+        else:
+            for move in moves:
+                temp_v = self.min_value(state.generateSuccessor(index,move),index+1,depth)[0]
+                e_val += prob*float(temp_v)
+        return e_val,""
 
 def betterEvaluationFunction(currentGameState):
   """
@@ -244,6 +324,55 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
   """
   "*** YOUR CODE HERE ***"
+  currPos = currentGameState.getPacmanPosition()
+  Food = currentGameState.getFood()
+  newGhostStates = currentGameState.getGhostStates()
+  newScaredTimes = [ghostState.scaredTimer for ghostState in newGhostStates]
+
+  Food = Food.asList()
+  num_ghosts = len(newGhostStates)
+  dist = []
+  food_score = 0
+  sum_ghosts = 0
+  max_food = -100.0
+
+  if currentGameState.isWin():
+      return 1000
+
+  if Food:
+      if len(Food)==1:
+          food_score = float(2)/util.manhattanDistance(currPos,Food[0])
+      else:
+          for food in Food:
+              temp = float(2)/util.manhattanDistance(currPos,food)
+              if temp > max_food:
+                  max_food = float(temp)
+          #food dsitance inversely proportional to score
+          food_score = max_food
+
+      ghost_dist = []
+      if num_ghosts == 1:
+          if newPos == currGameState.getGhostPosition(1):
+              sum_ghosts = -2.5
+          else:
+              sum_ghosts = float(-2)/(util.manhattanDistance(currPos,currentGameState.getGhostPosition(1)))
+
+      else:
+          for i in range(num_ghosts):
+              temp_dist = util.manhattanDistance(currPos,currentGameState.getGhostPosition(i+1))
+              sum_ghosts = sum_ghosts - float(2)/(temp_dist+.01)
+
+      scared_times_avg = float(sum(newScaredTimes))/num_ghosts
+
+      _score = currentGameState.getScore()
+      if scared_times_avg != 0:
+          _score += scared_times_avg
+
+
+      return float(_score) + sum_ghosts + food_score
+
+  else:
+      return 0
   util.raiseNotDefined()
 
 # Abbreviation
