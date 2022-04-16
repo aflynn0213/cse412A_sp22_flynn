@@ -39,12 +39,11 @@ class ValueIterationAgent(ValueEstimationAgent):
      
     
     for i in range(iterations):
-      temp_vals = util.Counter()
       for s in mdp.getStates():
         actions = mdp.getPossibleActions(s)
         temp_vals = self.calcTransProbsQVals(s,actions)
         self.values[s] = temp_vals[temp_vals.argMax()]
-        
+      
         
   def calcTransProbsQVals(self,state,actions):
     temp_vals = util.Counter()
