@@ -25,7 +25,7 @@ class ValueIterationAgent(ValueEstimationAgent):
       Your value iteration agent should take an mdp on
       construction, run the indicated number of iterations
       and then act according to the resulting policy.
-    
+
       Some useful mdp methods you will use:
           mdp.getStates()
           mdp.getPossibleActions(state)
@@ -58,7 +58,7 @@ class ValueIterationAgent(ValueEstimationAgent):
           temp_vals[act] = temp_val
     return temp_vals
 
-  def internalQValCalc(self,s,act,t):
+  def internsalQValCalc(self,s,act,t):
     return t[1]*(self.mdp.getReward(s,act,t[0]) + self.discount*self.values[t[0]])
 
   
@@ -85,6 +85,8 @@ class ValueIterationAgent(ValueEstimationAgent):
 
     return qVal
     util.raiseNotDefined()
+
+ def computeQvalue(self, state, action):
 
   def getPolicy(self, state):
     """
@@ -114,4 +116,3 @@ class ValueIterationAgent(ValueEstimationAgent):
   def getAction(self, state):
     "Returns the policy at the state (no exploration)."
     return self.getPolicy(state)
-  
