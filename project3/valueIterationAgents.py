@@ -43,11 +43,8 @@ class ValueIterationAgent(ValueEstimationAgent):
       for s in mdp.getStates():
         actions = mdp.getPossibleActions(s)
         temp_vals = self.calcTransProbsQVals(s,actions)
-        if ( s == (0,2) and 6 == i):
-          self.values[s] = 0.46
         self.values[s] = temp_vals[temp_vals.argMax()]
-  
-        
+      
   def calcTransProbsQVals(self,state,actions):
     temp_vals = util.Counter()
     for act in actions:
@@ -58,7 +55,7 @@ class ValueIterationAgent(ValueEstimationAgent):
           temp_vals[act] = temp_val
     return temp_vals
 
-  def internsalQValCalc(self,s,act,t):
+  def internalQValCalc(self,s,act,t):
     return t[1]*(self.mdp.getReward(s,act,t[0]) + self.discount*self.values[t[0]])
 
   
@@ -86,7 +83,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     return qVal
     util.raiseNotDefined()
 
- def computeQvalue(self, state, action):
+ 
 
   def getPolicy(self, state):
     """
