@@ -6,6 +6,7 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
+
 import mdp, util
 
 from learningAgents import ValueEstimationAgent
@@ -36,8 +37,29 @@ class ValueIterationAgent(ValueEstimationAgent):
     self.iterations = iterations
     self.values = util.Counter() # A Counter is a dict with default 0
      
-    "*** YOUR CODE HERE ***"
     
+    for i in range(iterations):
+      temp_vals = util.Counter()
+      for s in mdp.getStates():
+        actions = mdp.getPossibleActions(s)
+        temp_vals = self.calcTransProbsQVals(s,actions)
+        self.values[s] = temp_vals[temp_vals.argMax()]
+  
+        
+  def calcTransProbsQVals(self,state,actions):
+    temp_vals = util.Counter()
+    for act in actions:
+          t_s = self.mdp.getTransitionStatesAndProbs(state,act)
+          temp_val = 0
+          for t in t_s:
+            temp_val += self.internalQValCalc(state,act,t)
+          temp_vals[act] = temp_val
+    return temp_vals
+
+  def internalQValCalc(self,s,act,t):
+    return t[1]*(self.mdp.getReward(s,act,t[0]) + self.discount*self.values[t[0]])
+
+  
   def getValue(self, state):
     """
       Return the value of the state (computed in __init__).
@@ -45,7 +67,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     return self.values[state]
 
 
-  def getQValue(self, state, action):
+  def getQValue(self, state, action, qVal=0):
     """
       The q-value of the state action pair
       (after the indicated number of value iteration
@@ -54,6 +76,12 @@ class ValueIterationAgent(ValueEstimationAgent):
       to derive it on the fly.
     """
     "*** YOUR CODE HERE ***"
+    states_probs = self.mdp.getTransitionStatesAndProbs(state, action)
+    
+    for t in states_probs:
+      qVal += t[1] * self.mdp.getReward(state, action, t[0]) + self.values[t[0]]
+
+    return qVal
     util.raiseNotDefined()
 
   def getPolicy(self, state):
@@ -65,6 +93,20 @@ class ValueIterationAgent(ValueEstimationAgent):
       terminal state, you should return None.
     """
     "*** YOUR CODE HERE ***"
+    if self.mdp.isTerminal(state):
+      return None
+
+    acts = self.mdp.getPossibleActions(state)
+    counter = util.Counter()
+    for i in acts:
+      trans = self.mdp.getTransitionStatesAndProbs(state,i)
+      sum = 0
+      for t in trans:
+        sum += self.internalQValCalc(state,i,t)
+      counter[i] = sum
+
+    return counter.argMax()
+  
     util.raiseNotDefined()
 
   def getAction(self, state):
