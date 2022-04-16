@@ -24,7 +24,7 @@ class ValueIterationAgent(ValueEstimationAgent):
       Your value iteration agent should take an mdp on
       construction, run the indicated number of iterations
       and then act according to the resulting policy.
-    
+
       Some useful mdp methods you will use:
           mdp.getStates()
           mdp.getPossibleActions(state)
@@ -35,9 +35,33 @@ class ValueIterationAgent(ValueEstimationAgent):
     self.discount = discount
     self.iterations = iterations
     self.values = util.Counter() # A Counter is a dict with default 0
-     
     "*** YOUR CODE HERE ***"
-    
+
+        state = self.mdp.getStates()[2]
+        print mdp.getPossibleActions(state)
+        nextState = mdp.getTransitionStatesAndProbs(state, mdp.getPossibleActions(state)[0])
+        print nextState
+        print "printed next state"
+        print mdp.getReward(state, mdp.getPossibleActions(state)[0] ,nextState)
+
+        states = self.mdp.getStates()
+
+        print self.mdp.getStartState()
+
+        for i in range(iterations):
+          valuesCopy = self.values.copy()
+          for state in states:
+            finalValue = None
+            for action in self.mdp.getPossibleActions(state):
+              currentValue = self.computeQValueFromValues(state,action)
+              if finalValue == None or finalValue < currentValue:
+                finalValue = currentValue
+            if finalValue == None:
+              finalValue = 0
+            valuesCopy[state] = finalValue
+
+          self.values = valuesCopy
+
   def getValue(self, state):
     """
       Return the value of the state (computed in __init__).
@@ -56,6 +80,8 @@ class ValueIterationAgent(ValueEstimationAgent):
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
+ def computeQvalue(self, state, action):
+
   def getPolicy(self, state):
     """
       The policy is the best action in the given state
@@ -70,4 +96,3 @@ class ValueIterationAgent(ValueEstimationAgent):
   def getAction(self, state):
     "Returns the policy at the state (no exploration)."
     return self.getPolicy(state)
-  
