@@ -39,11 +39,12 @@ class ValueIterationAgent(ValueEstimationAgent):
      
     
     for i in range(iterations):
+      temp_map = util.Counter()
       for s in mdp.getStates():
         actions = mdp.getPossibleActions(s)
         temp_vals = self.calcTransProbsQVals(s,actions)
-        self.values[s] = temp_vals[temp_vals.argMax()]
-      
+        temp_map[s] = temp_vals[temp_vals.argMax()]
+      self.values = temp_map
         
   def calcTransProbsQVals(self,state,actions):
     temp_vals = util.Counter()
@@ -98,15 +99,15 @@ class ValueIterationAgent(ValueEstimationAgent):
       return None
 
     acts = self.mdp.getPossibleActions(state)
-    counter = util.Counter()
+    values = util.Counter()
     for i in acts:
       trans = self.mdp.getTransitionStatesAndProbs(state,i)
       sum = 0
       for t in trans:
         sum += self.internalQValCalc(state,i,t)
-      counter[i] = sum
+      values[i] = sum
 
-    return counter.argMax()
+    return values.argMax()
   
     util.raiseNotDefined()
 
