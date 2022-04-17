@@ -6,6 +6,8 @@
 # John DeNero (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
 # For more info, see http://inst.eecs.berkeley.edu/~cs188/sp09/pacman.html
 
+from ast import excepthandler
+from logging import NullHandler
 import random
 import sys
 import mdp
@@ -114,8 +116,9 @@ class Gridworld(mdp.MarkovDecisionProcess):
     """        
         
     if action not in self.getPossibleActions(state):
-      raise "Illegal action!"
+      raise RuntimeError("Illegal action!")
       
+
     if self.isTerminal(state):
       return []
     
