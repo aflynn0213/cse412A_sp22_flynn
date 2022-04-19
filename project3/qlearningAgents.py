@@ -59,10 +59,11 @@ class QLearningAgent(ReinforcementAgent):
       terminal state, you should return a value of 0.0.
     """
     "*** YOUR CODE HERE ***"
-    if not self.getLegalActions(state):
+    legal = self.getLegalActions(state)
+    if not legal:
       return 0.0
     
-    q_vals = [self.getQValue(state,action) for action in self.getLegalActions]
+    q_vals = [self.getQValue(state,action) for action in legal]
     max_action = max(q_vals)
     
     return max_action
@@ -109,12 +110,10 @@ class QLearningAgent(ReinforcementAgent):
 
     if util.flipCoin(self.epsilon):
         action = (random.choice(legalActions))
-        print("IF",action)
+        
     else:
         action = (self.getPolicy(state))
-        print("ELSE",action)
-    
-    print(action)
+        
     return action
     util.raiseNotDefined()
 
@@ -128,19 +127,15 @@ class QLearningAgent(ReinforcementAgent):
       it will be called on your behalf
     """
     "*** YOUR CODE HERE ***"
-    """Q(s,a) = (1-alpha)Q(s,a)+alpha[r + gamma*max(Q(s',a')-Q(s,a))]"""
-    reward = 0.1
+    """Q(s,a) = (1-alpha)Q(s,a)+alpha[r + gamma*maxQ(s',a')]"""
     temp = self.vals[(state,action)] 
     nextActions = self.getLegalActions(nextState)
     if not nextActions:
       self.vals[(nextState,action)] = 0
     else:
-      print("HERE CALCULATING")
       mx = max([self.getQValue(nextState,act) for act in nextActions])
-      print(mx)
       quantity = reward + self.discount*mx
-      print(quantity)
-      self.vals[(nextState,action)] = self.getQValue(state,action)+self.alpha*(quantity+self.getQValue(state,action))
+      self.vals[(nextState,action)] = (1-self.alpha)*self.getQValue(state,action)+self.alpha*(quantity)
     
 
 class PacmanQAgent(QLearningAgent):
@@ -198,30 +193,25 @@ class ApproximateQAgent(PacmanQAgent):
     """
     "*** YOUR CODE HERE ***"
     Q = 0
-    featureVector = self.featExtractor.getFeatures(state, action)
-    for i in featureVector:
-        Q += self.weights[i] * featureVector[i]
+    feats = self.featExtractor.getFeatures(state, action)
+    for i in feats.keys():
+        Q += self.weights[i] * feats[i]
     return Q
-    util.raiseNotDefined()
+    #util.raiseNotDefined()
 
   def update(self, state, action, nextState, reward):
     """
        Should update your weights based on transition
     """
     "*** YOUR CODE HERE ***"
-    features = self.featExtractor.getFeatures(state, action)
-    i = 0
-    legalActions = self.getLegalActions(nextState)
-
-    for feat in features:
-      diff = 0
-      if not legalActions:
-          diff = reward - self.getQValue(state, action)
-      else:
-          diff = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in legalActions])) - self.getQValue(state, action)
-    self.weights[feat] = self.weights[feat] + self.alpha * diff * features[feat]
-    i += 1
-    util.raiseNotDefined()
+    feats = self.featExtractor.getFeatures(state, action)
+    nextActions = self.getLegalActions(nextState)
+    if nextActions:
+      diff = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in nextActions])) - self.getQValue(state, action)
+    else:
+      diff = reward - self.getQValue(state,action)
+    for key in feats.keys():    
+        self.weights[key] = self.weights[key] + self.alpha * diff * feats[key]
 
   def final(self, state):
     "Called at the end of each game."
