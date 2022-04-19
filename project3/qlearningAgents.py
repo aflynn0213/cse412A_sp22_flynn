@@ -78,13 +78,14 @@ class QLearningAgent(ReinforcementAgent):
       return None
     
     mx_val = -10000
-    
+    req_act = None 
     for i in self.getLegalActions(state):
       temp_q = self.getQValue(state,i)
       if (mx_val <  temp_q):
         mx_val = temp_q
+        req_act = i
     
-    return mx_val
+    return req_act
     
     util.raiseNotDefined()
 
@@ -108,9 +109,12 @@ class QLearningAgent(ReinforcementAgent):
 
     if util.flipCoin(self.epsilon):
         action = (random.choice(legalActions))
+        print("IF",action)
     else:
         action = (self.getPolicy(state))
-
+        print("ELSE",action)
+    
+    print(action)
     return action
     util.raiseNotDefined()
 
@@ -125,14 +129,18 @@ class QLearningAgent(ReinforcementAgent):
     """
     "*** YOUR CODE HERE ***"
     """Q(s,a) = (1-alpha)Q(s,a)+alpha[r + gamma*max(Q(s',a')-Q(s,a))]"""
+    reward = 0.1
     temp = self.vals[(state,action)] 
-    mx = -10000.0
-    for action in self.getLegalActions(nextState):
-      temp = self.getQValue(nextState,action)
-      if ( temp > mx ):
-        mx = temp
-    quantity = reward + self.discount*mx
-    self.vals[(nextState,action)] = (1-self.alpha)*temp+self.alpha*quantity
+    nextActions = self.getLegalActions(nextState)
+    if not nextActions:
+      self.vals[(nextState,action)] = 0
+    else:
+      print("HERE CALCULATING")
+      mx = max([self.getQValue(nextState,act) for act in nextActions])
+      print(mx)
+      quantity = reward + self.discount*mx
+      print(quantity)
+      self.vals[(nextState,action)] = self.getQValue(state,action)+self.alpha*(quantity+self.getQValue(state,action))
     
 
 class PacmanQAgent(QLearningAgent):
@@ -204,12 +212,13 @@ class ApproximateQAgent(PacmanQAgent):
     features = self.featExtractor.getFeatures(state, action)
     i = 0
     legalActions = self.getLegalActions(nextState)
+
     for feat in features:
-        diff = 0
-    if not legalActions:
-        diff = reward - self.getQValue(state, action)
-    else:
-        diff = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in legalActions])) - self.getQValue(state, action)
+      diff = 0
+      if not legalActions:
+          diff = reward - self.getQValue(state, action)
+      else:
+          diff = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in legalActions])) - self.getQValue(state, action)
     self.weights[feat] = self.weights[feat] + self.alpha * diff * features[feat]
     i += 1
     util.raiseNotDefined()
