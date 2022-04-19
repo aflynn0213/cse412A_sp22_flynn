@@ -116,7 +116,7 @@ class Gridworld(mdp.MarkovDecisionProcess):
     """        
         
     if action not in self.getPossibleActions(state):
-      raise RuntimeError("Illegal action!")
+      raise Exception("Illegal action!")
       
 
     if self.isTerminal(state):
