@@ -62,10 +62,10 @@ class QLearningAgent(ReinforcementAgent):
     legal = self.getLegalActions(state)
     if not legal:
       return 0.0
-    
+
     q_vals = [self.getQValue(state,action) for action in legal]
     max_action = max(q_vals)
-    
+
     return max_action
 
   def getPolicy(self, state):
@@ -77,17 +77,17 @@ class QLearningAgent(ReinforcementAgent):
     "*** YOUR CODE HERE ***"
     if not self.getLegalActions(state):
       return None
-    
+
     mx_val = -10000
-    req_act = None 
+    req_act = None
     for i in self.getLegalActions(state):
       temp_q = self.getQValue(state,i)
       if (mx_val <  temp_q):
         mx_val = temp_q
         req_act = i
-    
+
     return req_act
-    
+
     util.raiseNotDefined()
 
   def getAction(self, state):
@@ -110,10 +110,10 @@ class QLearningAgent(ReinforcementAgent):
 
     if util.flipCoin(self.epsilon):
         action = (random.choice(legalActions))
-        
+
     else:
         action = (self.getPolicy(state))
-        
+
     return action
     util.raiseNotDefined()
 
@@ -128,15 +128,9 @@ class QLearningAgent(ReinforcementAgent):
     """
     "*** YOUR CODE HERE ***"
     """Q(s,a) = (1-alpha)Q(s,a)+alpha[r + gamma*maxQ(s',a')]"""
-    temp = self.vals[(state,action)] 
-    nextActions = self.getLegalActions(nextState)
-    if not nextActions:
-      self.vals[(nextState,action)] = 0
-    else:
-      mx = max([self.getQValue(nextState,act) for act in nextActions])
-      quantity = reward + self.discount*mx
-      self.vals[(nextState,action)] = (1-self.alpha)*self.getQValue(state,action)+self.alpha*(quantity)
-    
+    quantity = reward + self.discount*self.getValue(nextState)
+    self.vals[(state,action)] = (1-self.alpha)*self.getQValue(state,action)+self.alpha*(quantity)
+
 
 class PacmanQAgent(QLearningAgent):
   "Exactly the same as QLearningAgent, but with different default parameters"
@@ -210,7 +204,7 @@ class ApproximateQAgent(PacmanQAgent):
       diff = (reward + self.discount * max([self.getQValue(nextState, nextAction) for nextAction in nextActions])) - self.getQValue(state, action)
     else:
       diff = reward - self.getQValue(state,action)
-    for key in feats.keys():    
+    for key in feats.keys():
         self.w[key] = self.w[key] + self.alpha * diff * feats[key]
 
   def final(self, state):
